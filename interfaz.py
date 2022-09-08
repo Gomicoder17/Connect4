@@ -136,8 +136,7 @@ def main():
                 correct = place(board,int(c),turn)
 
                 print(correct)
-
-
+    
             
         else:
             ...
