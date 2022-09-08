@@ -29,7 +29,7 @@ def show(board):
     
     print_centred("\n" * ((TERMY - 11) // 2)) 
     print_centred("  1   2   3   4   5   6   7 ")
-    for row in reversed(board):
+    for row in board:
         print_centred("+---" * 6 + "+---+")
         print_centred("| " + " | ".join([cells[u] for u in row]) + " |") 
     print_centred("+---" * 6 + "+---+")
@@ -37,19 +37,11 @@ def show(board):
     print_centred("")
     print_centred("")
 
-def place(board,n,turn):
-    try:
-        correct = False
-        row = 0
-        while not correct:
-            if board[row][n-1] == 0:
-                board[row][n-1] = turn+1
-                correct = True
-            else:
-                row += 1
-        return correct
-    except IndexError:
-        return correct
+def place(board,x,turn):
+    y = len(board) - 1
+    while board[y][x-1] != 0:
+        y -= 1
+    board[y][x-1] = turn+1
 
 def winning_move(board, piece):
     
@@ -102,6 +94,10 @@ def menu():
         m = menu()
     return int(m)
 
+def correct(input, possible):
+    if input in possible:
+        return True
+    return False
 
 def main():
     board = [[0 for i in range(7)] for i in range(6)]
@@ -117,26 +113,27 @@ def main():
             print_centred(f"PLAYER {turn+1}'s turn")
             print('\n\n\n\n')
             c = input('Select a column: ')
-            while c != '1' and c != '2' and c != '3' and c != '4' and c != '5' and c != '6' and c != '7':
+            corr = correct(c,['1','2','3','4','5','6','7'])
+            while not corr:
                 show(board)
                 print_centred(f"PLAYER {turn+1}'s turn")
                 print('\n\n\n\n')
                 c = input('Select a column: ')
-            correct = place(board,int(c),turn)
-            print(correct)
-            while not correct:
+                corr = correct(c,['1','2','3','4','5','6','7'])
+            while board[0][int(c)] != 0:
                 show(board)
                 print_centred(f"PLAYER {turn+1}'s turn")
                 print('\n\n\n\n')
                 c = input('Select a column: ')
-                while c != '1' and c != '2' and c != '3' and c != '4' and c != '5' and c != '6' and c != '7':
+                corr = correct(c,['1','2','3','4','5','6','7'])
+                while not corr:
                     show(board)
                     print_centred(f"PLAYER {turn+1}'s turn")
                     print('\n\n\n\n')
                     c = input('Select a column: ')
-                correct = place(board,int(c),turn)
-
-                print(correct)
+                    corr = correct(c,['1','2','3','4','5','6','7'])
+            place(board,int(c),turn)
+            
     
             
         else:
