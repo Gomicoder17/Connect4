@@ -1,6 +1,7 @@
 import os
 import sys
 import minimax
+import time
 
 
 ROW_COUNT = 6
@@ -120,7 +121,7 @@ def main():
                 print('\n\n\n\n')
                 c = input('Select a column: ')
                 corr = correct(c,['1','2','3','4','5','6','7'])
-            while board[0][int(c)] != 0:
+            while board[0][int(c)-1] != 0:
                 show(board)
                 print_centred(f"PLAYER {turn+1}'s turn")
                 print('\n\n\n\n')
@@ -139,11 +140,11 @@ def main():
         else:
             choice = minimax.find_best_move(board,turn+1)
             place(board,int(choice+1),turn)
+        show(board)
         draw = check_draw(board)
         victoria = winning_move(board,turn+1)
     
-    
-
+    time.sleep(4)
     os.system("clear || cls")
     print('\n\n\n\n') 
     if victoria:
