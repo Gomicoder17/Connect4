@@ -1,6 +1,7 @@
 import os
+import sys
 
-board = [[0 for i in range(7)] for i in range(6)]
+
 ROW_COUNT = 6
 COLUMN_COUNT = 7
 TERMX, TERMY = os.get_terminal_size()
@@ -28,12 +29,12 @@ def show(board):
     print_centred("")
     print_centred("")
 
-def place(n,turn):
+def place(board,n,turn):
     correct = False
     row = 0
     while not correct:
         if board[row][n-1] == 0:
-            board[row][n-1] = turn
+            board[row][n-1] = turn+1
             correct = True
         else:
             row += 1
@@ -69,11 +70,64 @@ def intro():
     print_centred('CONNECT 4')
     print_centred('Press enter to play')
     input()
-   
+
+def menu():
+    os.system("clear || cls") 
+    print_centred('CHOOSE HOW YOU WANT TO PLAY')
+    print()
+    print()
+    print_centred('1:  1 player vs bot ')
+    print()
+    print_centred('2:     2 players    ')
+    print()
+    print()
+    print()
+    print()
+    print()
+    print()
+    m = input('Enter the game mode: ')
+    if m != '1' and m != '2':
+        m = menu()
+    return int(m)
 
 
 def main():
-    intro()
+    board = [[0 for i in range(7)] for i in range(6)]
+    m = menu()
     show(board)
-
+    victoria = False
+    turn = 1
+    while not victoria:
+        turn = 1 - turn
+        if m == 2 or (turn == 0 and m == 1):
+            print_centred(f"PLAYER {turn+1}'s turn")
+            print('\n\n\n\n')
+            c = int(input('Select a column: '))
+            while c < 1 or c > 7:
+                show(board)
+                c = int(input('Select a column: '))
+            place(board,c,turn)
+            show(board)
+        else:
+            ...
+        
+        victoria = winning_move(board,turn+1)
+    
+    os.system("clear || cls")
+    print('\n\n\n\n') 
+    print_centred(f'PLAYER {turn + 1} HAS WON THE GAME')
+    print('\n\n\n\n')
+    print_centred('DO YOU WANT TO PLAY AGAIN? (y/n)')
+    play = input()
+    while play != 'y' and play != 'n':
+        os.system("clear || cls") 
+        print_centred(f'\n\n\n\nPLAYER {turn + 1} HAS WON THE GAME')
+        print('\n\n\n\n')
+        print_centred('DO YOU WANT TO PLAY AGAIN? (y/n)')
+        play = input()
+    if play == 'y':
+        main()
+    else:
+        sys.exit()
+intro()
 main()
