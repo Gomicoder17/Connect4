@@ -13,6 +13,13 @@ def centred(*lines):
 def print_centred(line):
     print(*centred(line))
 
+def check_draw(board):
+    for i in board:
+        for j in i:
+            if j == 0:
+                return False
+    return True
+
 def show(board):           
     os.system("clear || cls")
     
@@ -30,14 +37,18 @@ def show(board):
     print_centred("")
 
 def place(board,n,turn):
-    correct = False
-    row = 0
-    while not correct:
-        if board[row][n-1] == 0:
-            board[row][n-1] = turn+1
-            correct = True
-        else:
-            row += 1
+    try:
+        correct = False
+        row = 0
+        while not correct:
+            if board[row][n-1] == 0:
+                board[row][n-1] = turn+1
+                correct = True
+            else:
+                row += 1
+        return correct
+    except IndexError:
+        return correct
 
 def winning_move(board, piece):
     
@@ -97,31 +108,60 @@ def main():
     show(board)
     victoria = False
     turn = 1
-    while not victoria:
+    draw = False
+    while not victoria and not draw:
         turn = 1 - turn
+        show(board)
         if m == 2 or (turn == 0 and m == 1):
             print_centred(f"PLAYER {turn+1}'s turn")
             print('\n\n\n\n')
-            c = int(input('Select a column: '))
-            while c < 1 or c > 7:
+            c = input('Select a column: ')
+            while c != '1' and c != '2' and c != '3' and c != '4' and c != '5' and c != '6' and c != '7':
                 show(board)
-                c = int(input('Select a column: '))
-            place(board,c,turn)
-            show(board)
+                print_centred(f"PLAYER {turn+1}'s turn")
+                print('\n\n\n\n')
+                c = input('Select a column: ')
+            correct = place(board,int(c),turn)
+            print(correct)
+            while not correct:
+                show(board)
+                print_centred(f"PLAYER {turn+1}'s turn")
+                print('\n\n\n\n')
+                c = input('Select a column: ')
+                while c != '1' and c != '2' and c != '3' and c != '4' and c != '5' and c != '6' and c != '7':
+                    show(board)
+                    print_centred(f"PLAYER {turn+1}'s turn")
+                    print('\n\n\n\n')
+                    c = input('Select a column: ')
+                correct = place(board,int(c),turn)
+
+                print(correct)
+
+
+            
         else:
             ...
-        
+        draw = check_draw(board)
         victoria = winning_move(board,turn+1)
     
+    
+
     os.system("clear || cls")
     print('\n\n\n\n') 
-    print_centred(f'PLAYER {turn + 1} HAS WON THE GAME')
+    if victoria:
+        print_centred(f'PLAYER {turn + 1} HAS WON THE GAME')
+    else: 
+        print_centred("IT'S A DRAW")
     print('\n\n\n\n')
     print_centred('DO YOU WANT TO PLAY AGAIN? (y/n)')
     play = input()
     while play != 'y' and play != 'n':
         os.system("clear || cls") 
-        print_centred(f'\n\n\n\nPLAYER {turn + 1} HAS WON THE GAME')
+        print('\n\n\n\n')
+        if victoria:
+            print_centred(f'PLAYER {turn + 1} HAS WON THE GAME')
+        else:
+            print_centred("IT'S A DRAW")
         print('\n\n\n\n')
         print_centred('DO YOU WANT TO PLAY AGAIN? (y/n)')
         play = input()
@@ -129,5 +169,7 @@ def main():
         main()
     else:
         sys.exit()
+   
+
 intro()
 main()
