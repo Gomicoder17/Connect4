@@ -1,6 +1,6 @@
 import random as r
 
-EMPTY = " "
+EMPTY = "-"
 PLAYER1 = 1
 PLAYER2 = 2
 
@@ -142,7 +142,7 @@ def minimax(board, depth, player):
     elif player == PLAYER1:
         best = -1000
         for x in range(len(board[0])):
-            if board[0][x] == " ":
+            if board[0][x] == EMPTY:
                 make_move(board, player, x)
                 best = max(best, minimax(board, depth - 1, PLAYER2))
                 undo_move(board, x)
@@ -150,7 +150,7 @@ def minimax(board, depth, player):
     elif player == PLAYER2:
         best = 1000
         for x in range(len(board[0])):
-            if board[0][x] == " ":
+            if board[0][x] == EMPTY:
                 make_move(board, player, x)
                 best = min(best, minimax(board, depth - 1, PLAYER1))
                 undo_move(board, x)
@@ -161,7 +161,7 @@ def find_best_move(board, player):
     best_score = 1000
     best_move = None
     for x in range(len(board[0])):
-        if board[0][x] == " ":
+        if board[0][x] == EMPTY:
             make_move(board, player, x)
             score = minimax(board, 0, PLAYER1 if player == PLAYER2 else PLAYER2)
             undo_move(board, x)
@@ -172,4 +172,11 @@ def find_best_move(board, player):
 
 
 board = [[EMPTY for i in range(7)] for j in range(6)]
-print(find_best_move(board, PLAYER1))
+board[5][3] = PLAYER1
+board[4][3] = PLAYER1
+board[3][3] = PLAYER1
+board[5][0] = PLAYER2
+board[5][1] = PLAYER2
+for row in board:
+    print(" ".join([str(x) for x in row]))
+print(find_best_move(board, PLAYER2))
