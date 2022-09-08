@@ -1,5 +1,6 @@
 import os
 import sys
+import minimax
 
 
 ROW_COUNT = 6
@@ -139,7 +140,8 @@ def main():
     
             
         else:
-            ...
+            choice = minimax.find_best_move(board,turn+1)
+            place(board,int(choice+1),turn)
         draw = check_draw(board)
         victoria = winning_move(board,turn+1)
     
