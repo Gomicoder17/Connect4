@@ -1,8 +1,13 @@
 import random as r
 
-EMPTY = "-"
+EMPTY = 0
 PLAYER1 = 1
 PLAYER2 = 2
+
+
+def print_board(board):
+    for row in board:
+        print(" ".join([str(x) for x in row]))
 
 
 def check_winner(board):
@@ -158,6 +163,10 @@ def minimax(board, depth, player):
 
 
 def find_best_move(board, player):
+    print("Finding best move...")
+    print("Board:")
+    print_board(board)
+    input()
     best_score = 1000
     best_move = None
     for x in range(len(board[0])):
@@ -172,11 +181,10 @@ def find_best_move(board, player):
 
 
 board = [[EMPTY for i in range(7)] for j in range(6)]
-board[5][3] = PLAYER1
-board[4][3] = PLAYER1
-board[3][3] = PLAYER1
+board[5][5] = PLAYER1
+board[4][5] = PLAYER1
+# board[3][3] = PLAYER1
 board[5][0] = PLAYER2
-board[5][1] = PLAYER2
-for row in board:
-    print(" ".join([str(x) for x in row]))
-print(find_best_move(board, PLAYER2))
+# board[5][1] = PLAYER2
+
+print(find_best_move(board, PLAYER1))
