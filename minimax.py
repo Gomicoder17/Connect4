@@ -66,8 +66,11 @@ def is_draw(board):
 
 
 def evaluate(board, player):
-    score = 0
-    max_score = 0
+    # print("Evaluating board for", player)
+    # print_board(board)
+    positional_score = 0
+    danger_score = 0
+    max_positional_score = 0
     rival = PLAYER1 if player == PLAYER2 else PLAYER2
     # Traverse board horizontally
     for row in range(len(board)):
@@ -79,8 +82,12 @@ def evaluate(board, player):
                 board[row][col + 3],
             ]
             if not rival in four:
-                score += 1
-            max_score += 1
+                positional_score += 1
+            if four.count(player) == 3 and four.count(EMPTY) == 1:
+                danger_score += 10
+            elif four.count(player) == 2 and four.count(EMPTY) == 2:
+                danger_score += 5
+            max_positional_score += 1
     # Traverse board vertically
     for row in range(len(board) - 3):
         for col in range(len(board[0])):
@@ -91,8 +98,12 @@ def evaluate(board, player):
                 board[row + 3][col],
             ]
             if not rival in four:
-                score += 1
-            max_score += 1
+                positional_score += 1
+            if four.count(player) == 3 and four.count(EMPTY) == 1:
+                danger_score += 10
+            elif four.count(player) == 2 and four.count(EMPTY) == 2:
+                danger_score += 5
+            max_positional_score += 1
 
     # Traverse board diagonally
     for row in range(len(board) - 3):
@@ -104,8 +115,12 @@ def evaluate(board, player):
                 board[row + 3][col + 3],
             ]
             if not rival in four:
-                score += 1
-            max_score += 1
+                positional_score += 1
+            if four.count(player) == 3 and four.count(EMPTY) == 1:
+                danger_score += 10
+            elif four.count(player) == 2 and four.count(EMPTY) == 2:
+                danger_score += 5
+            max_positional_score += 1
 
     for row in range(len(board) - 3):
         for col in range(3, len(board[0])):
@@ -116,9 +131,14 @@ def evaluate(board, player):
                 board[row + 3][col - 3],
             ]
             if not rival in four:
-                score += 1
-            max_score += 1
-    return (2 * score / max_score - 1) * 10
+                positional_score += 1
+            if four.count(player) == 3 and four.count(EMPTY) == 1:
+                danger_score += 10
+            elif four.count(player) == 2 and four.count(EMPTY) == 2:
+                danger_score += 5
+            max_positional_score += 1
+    positional_score = 5 * positional_score / max_positional_score
+    return positional_score + danger_score
 
 
 def make_move(board, player, x):
@@ -136,7 +156,6 @@ def undo_move(board, x):
 
 
 def minimax(board, depth, player):
-    # print("minimax", board, depth, player)
     winner = check_winner(board)
     if winner:
         return 1000 if winner == player else -1000
@@ -163,16 +182,18 @@ def minimax(board, depth, player):
 
 
 def find_best_move(board, player):
-    print("Finding best move...")
-    print("Board:")
-    print_board(board)
-    input()
+    # print("Finding best move for", player)
+    # print("Board:")
+    # print_board(board)
+    # input()
     best_score = 1000
     best_move = None
     for x in range(len(board[0])):
         if board[0][x] == EMPTY:
             make_move(board, player, x)
-            score = minimax(board, 0, PLAYER1 if player == PLAYER2 else PLAYER2)
+            # print("Evaluating move", x)
+            score = minimax(board, 4, PLAYER1 if player == PLAYER2 else PLAYER2)
+            # print(score)
             undo_move(board, x)
             if score < best_score:
                 best_score = score
@@ -181,10 +202,8 @@ def find_best_move(board, player):
 
 
 board = [[EMPTY for i in range(7)] for j in range(6)]
-board[5][5] = PLAYER1
-board[4][5] = PLAYER1
-# board[3][3] = PLAYER1
-board[5][0] = PLAYER2
-# board[5][1] = PLAYER2
+board[5][3] = PLAYER1
+board[4][3] = PLAYER2
+board[5][2] = PLAYER1
 
-print(find_best_move(board, PLAYER1))
+print(find_best_move(board, PLAYER2))
