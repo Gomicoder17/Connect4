@@ -8,6 +8,7 @@ PLAYER2 = 2
 def print_board(board):
     for row in board:
         print(" ".join([str(x) for x in row]))
+    print()
 
 
 def is_win(board):
@@ -44,6 +45,7 @@ def is_win(board):
                 != EMPTY
             ):
                 return board[row][col]
+    # Traverse board diagonally 2
     for row in range(len(board) - 3):
         for col in range(3, len(board[0])):
             if (
@@ -65,11 +67,7 @@ def is_draw(board):
     return True
 
 
-def evaluate(board, maximizer):
-    minimizer = PLAYER1 if maximizer == PLAYER2 else PLAYER2
-    # print("Evaluating board for maximizer", maximizer)
-    # print_board(board)
-    # Traverse board horizontally
+def evaluate(board):
     score = 0
     for row in range(len(board)):
         for col in range(len(board[0]) - 3):
@@ -79,13 +77,10 @@ def evaluate(board, maximizer):
                 board[row][col + 2],
                 board[row][col + 3],
             ]
-            # Add scores for maximizer
-            if not minimizer in four:
-                score += four.count(maximizer) ** 2
-            # Subtract scores for minimizer
-            if not maximizer in four:
-                score -= four.count(minimizer) ** 2
-    # Traverse board vertically
+            if not PLAYER2 in four:
+                score += (four.count(PLAYER1)) ** 2
+            if not PLAYER1 in four:
+                score -= (four.count(PLAYER2)) ** 2
     for row in range(len(board) - 3):
         for col in range(len(board[0])):
             four = [
@@ -94,14 +89,10 @@ def evaluate(board, maximizer):
                 board[row + 2][col],
                 board[row + 3][col],
             ]
-            # Add scores for maximizer
-            if not minimizer in four:
-                score += four.count(maximizer) ** 2
-            # Subtract scores for minimizer
-            if not maximizer in four:
-                score -= four.count(minimizer) ** 2
-
-    # Traverse board diagonally
+            if not PLAYER2 in four:
+                score += (four.count(PLAYER1)) ** 2
+            if not PLAYER1 in four:
+                score -= (four.count(PLAYER2)) ** 2
     for row in range(len(board) - 3):
         for col in range(len(board[0]) - 3):
             four = [
@@ -110,13 +101,10 @@ def evaluate(board, maximizer):
                 board[row + 2][col + 2],
                 board[row + 3][col + 3],
             ]
-            # Add scores for maximizer
-            if not minimizer in four:
-                score += four.count(maximizer) ** 2
-            # Subtract scores for minimizer
-            if not maximizer in four:
-                score -= four.count(minimizer) ** 2
-
+            if not PLAYER2 in four:
+                score += (four.count(PLAYER1)) ** 2
+            if not PLAYER1 in four:
+                score -= (four.count(PLAYER2)) ** 2
     for row in range(len(board) - 3):
         for col in range(3, len(board[0])):
             four = [
@@ -125,16 +113,10 @@ def evaluate(board, maximizer):
                 board[row + 2][col - 2],
                 board[row + 3][col - 3],
             ]
-            # Add scores for maximizer
-            if not minimizer in four:
-                score += four.count(maximizer) ** 2
-            # Subtract scores for minimizer
-            if not maximizer in four:
-                score -= four.count(minimizer) ** 2
-    # print("Evaluated board for maximizer", maximizer)
-    # print_board(board)
-    # print("Score:", score)
-    # input()
+            if not PLAYER2 in four:
+                score += (four.count(PLAYER1)) ** 2
+            if not PLAYER1 in four:
+                score -= (four.count(PLAYER2)) ** 2
     return score
 
 
@@ -152,59 +134,52 @@ def undo_move(board, x):
     board[y][x] = EMPTY
 
 
-def minimax(board, depth, player, maximizer):
-    # print("Minimax called with depth", depth, "and player", player)
+def minimax(board, depth, player, alpha=float("-inf"), beta=float("inf")):
     if is_win(board):
-        # print("Win detected", "player", player, "maximizer", maximizer)
-        # print_board(board)
-        return -1000 if player == maximizer else 1000
+        return 1000 if player == PLAYER2 else -1000, None
     elif is_draw(board):
-        return 0
+        return 0, None
     elif depth == 0:
-        return evaluate(board, maximizer)
-    elif player == maximizer:
-        best = -1000
+        return evaluate(board), None
+    elif player == PLAYER1:
+        best, bestMove = -1000, None
         for x in range(len(board[0])):
             if board[0][x] == EMPTY:
                 make_move(board, player, x)
-                next_player = PLAYER2 if PLAYER1 == maximizer else PLAYER1
-                best = max(best, minimax(board, depth - 1, next_player, maximizer))
+                score, _ = minimax(board, depth - 1, PLAYER2, alpha, beta)
+                if score >= best:
+                    best, bestMove = score, x
+                alpha = max(alpha, best)
                 undo_move(board, x)
-        return best
-    else:
-        best = 1000
+                if alpha >= beta:
+                    return float("inf"), bestMove
+        return best, bestMove
+    elif player == PLAYER2:
+        best, bestMove = 1000, None
         for x in range(len(board[0])):
             if board[0][x] == EMPTY:
                 make_move(board, player, x)
-                next_player = PLAYER1 if PLAYER1 == maximizer else PLAYER2
-                best = min(best, minimax(board, depth - 1, next_player, maximizer))
+                score, _ = minimax(board, depth - 1, PLAYER1, alpha, beta)
+                if score <= best:
+                    best, bestMove = score, x
+                beta = min(beta, best)
                 undo_move(board, x)
-        return best
+                if alpha >= beta:
+                    return float("-inf"), bestMove
+        return best, bestMove
 
 
-def find_best_move(board, player):
-    # print("Finding best move for", player)
-    # print("Board:")
-    # print_board(board)
-    # input()
-    best_score = -1000
-    best_move = None
-    for x in range(len(board[0])):
-        if board[0][x] == EMPTY:
-            make_move(board, player, x)
-            # print("Evaluating move", x)
-            rival = PLAYER1 if player == PLAYER2 else PLAYER2
-            score = minimax(board, 4, rival, player)
-            # print(score)
-            undo_move(board, x)
-            if score > best_score:
-                best_score = score
-                best_move = x
-    return best_move
+def find_best_move(board, depth=3):
+    player = (sum([sum(row) for row in board]) % 2) + 1
+    return minimax(board, depth, player)
 
 
-board = [[EMPTY for i in range(7)] for j in range(6)]
-for i, move in enumerate([4, 0, 6, 1, 3]):
-    make_move(board, PLAYER1 if i % 2 == 0 else PLAYER2, move)
-print_board(board)
-print(find_best_move(board, PLAYER2))
+if __name__ == "__main__":
+    board = [[EMPTY for i in range(7)] for j in range(6)]
+    for i, move in enumerate([0, 1, 2, 3, 4, 5, 6]):
+        make_move(board, PLAYER1, move)
+        # print_board(board)
+        print(evaluate(board))
+        undo_move(board, move)
+    print_board(board)
+    print(minimax(board, 7, PLAYER1))
