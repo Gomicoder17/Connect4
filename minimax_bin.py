@@ -218,7 +218,7 @@ def minimax(board, depth, player, alpha=float("-inf"), beta=float("inf")):
                     best, bestMove = score, x
                 alpha = max(alpha, best)
                 board.undo_move(x)
-                if alpha >= beta:
+                if alpha >= beta or best == 1000:
                     return float("inf"), None
         return best, bestMove
     elif player == board.PLAYER2:
@@ -231,7 +231,7 @@ def minimax(board, depth, player, alpha=float("-inf"), beta=float("inf")):
                     best, bestMove = score, x
                 beta = min(beta, best)
                 board.undo_move(x)
-                if alpha >= beta:
+                if alpha >= beta or best == -1000:
                     return float("-inf"), None
 
         return best, bestMove
