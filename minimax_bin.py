@@ -227,7 +227,7 @@ def minimax(board, depth, player, alpha=float("-inf"), beta=float("inf")):
             if board.heights[x] % 7 < 6:
                 board.make_move(x)
                 score, _ = minimax(board, depth - 1, board.PLAYER1, alpha, beta)
-                if score <= best:
+                if score <= best or best == -1000:
                     best, bestMove = score, x
                 beta = min(beta, best)
                 board.undo_move(x)
