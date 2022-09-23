@@ -81,7 +81,6 @@ class Board:
                 & ((mask >> 3 * step) ^ toggle)
             )
             count += bin(n_ones).count("1")
-            # print("1000", bin(n_ones).count("1"))
         # Match 0100
         for step in (8, 7, 6):
             n_ones = (
@@ -91,7 +90,6 @@ class Board:
                 & ((mask >> 2 * step) ^ toggle)
             )
             count += bin(n_ones).count("1")
-            # print("0100", bin(n_ones).count("1"))
         # Match 0010
         for step in (8, 7, 6):
             n_ones = (
@@ -101,7 +99,6 @@ class Board:
                 & ((mask << 2 * step | 2 ** (2 * step) - 1) ^ toggle)
             )
             count += bin(n_ones).count("1")
-            # print("0010", bin(n_ones).count("1"))
         # Match 0001
         for step in (8, 7, 6):
             n_ones = (
@@ -111,7 +108,6 @@ class Board:
                 & ((mask << 3 * step | 2 ** (3 * step) - 1) ^ toggle)
             )
             count += bin(n_ones).count("1")
-            # print("0001", bin(n_ones).count("1"))
         return count
 
     def make_move(self, col):
