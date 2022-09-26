@@ -1,3 +1,7 @@
+import time
+import threading
+
+
 class Board:
     def __init__(self, board=None):
         self.WIDTH = 7
@@ -66,7 +70,6 @@ class Board:
         return count
 
     def count_ones(self, state, state_rival):
-        # SHIFT RIGHT (Down) with 1s
         barrier = int(
             "11111111000000100000010000001000000100000010000001000000",
             2,
@@ -83,7 +86,6 @@ class Board:
                 & ((mask >> 3 * step) ^ toggle)
             )
             count += bin(n_ones).count("1")
-            # print("1000", bin(n_ones).count("1"))
         # Match 0100
         for step in (8, 7, 6):
             n_ones = (
@@ -93,7 +95,6 @@ class Board:
                 & ((mask >> 2 * step) ^ toggle)
             )
             count += bin(n_ones).count("1")
-            # print("0100", bin(n_ones).count("1"))
         # Match 0010
         for step in (8, 7, 6):
             n_ones = (
@@ -103,7 +104,6 @@ class Board:
                 & ((mask << 2 * step | 2 ** (2 * step) - 1) ^ toggle)
             )
             count += bin(n_ones).count("1")
-            # print("0010", bin(n_ones).count("1"))
         # Match 0001
         for step in (8, 7, 6):
             n_ones = (
@@ -113,7 +113,6 @@ class Board:
                 & ((mask << 3 * step | 2 ** (3 * step) - 1) ^ toggle)
             )
             count += bin(n_ones).count("1")
-            # print("0001", bin(n_ones).count("1"))
         return count
 
     def make_move(self, col):
@@ -192,8 +191,23 @@ class Board:
         return board
 
     def find_best_move(self, depth=3):
-        print("Finding best move for player", self.player)
-        return minimax(self, depth, self.player)
+        # print("Finding best move for player", self.player)
+        # return minimax(self, depth, self.player)
+        done = False
+
+        def animation():
+            print("Finding the move to crush you ", end="", flush=True)
+            while not done:
+                print(".", end="", flush=True)
+                time.sleep(0.5)
+            print()
+
+        t = threading.Thread(target=animation)
+        t.start()
+        best_move = minimax(self, depth, self.player)
+        done = True
+        t.join()
+        return best_move
 
     def print(self):
         board = self.convert2board()
@@ -223,33 +237,32 @@ def minimax(board, depth, player, alpha=float("-inf"), beta=float("inf")):
                 alpha = max(alpha, best)
                 board.undo_move(x)
                 if alpha >= beta or best == 1000:
-                    return float("inf"), None
+                    return float("inf"), x
         return best, bestMove
     elif player == board.PLAYER2:
         best, bestMove = 1000, None
         for x in range(7):
             if board.heights[x] % 7 < 6:
                 board.make_move(x)
-                score, _ = minimax(
-                    board, depth - 1, board.PLAYER1, alpha, beta)
-                if score <= best:
+                score, _ = minimax(board, depth - 1, board.PLAYER1, alpha, beta)
+                if score <= best or best == -1000:
                     best, bestMove = score, x
                 beta = min(beta, best)
                 board.undo_move(x)
                 if alpha >= beta or best == -1000:
-                    return float("-inf"), None
+                    return float("-inf"), x
 
         return best, bestMove
 
 
 if __name__ == "__main__":
     board = [
-        "0000000",
-        "0000000",
-        "0000000",
-        "0000000",
-        "0000000",
-        "0000000",
+        "0002000",
+        "0001000",
+        "0002000",
+        "0021000",
+        "0212100",
+        "1121120",
     ]
     bin_board = Board(board)
     DEPTH = 9
