@@ -1,3 +1,7 @@
+import time
+import threading
+
+
 class Board:
     def __init__(self, board=None):
         self.WIDTH = 7
@@ -64,7 +68,6 @@ class Board:
         return count
 
     def count_ones(self, state, state_rival):
-        # SHIFT RIGHT (Down) with 1s
         barrier = int(
             "11111111000000100000010000001000000100000010000001000000",
             2,
@@ -185,8 +188,23 @@ class Board:
         return board
 
     def find_best_move(self, depth=3):
-        print("Finding best move for player", self.player)
-        return minimax(self, depth, self.player)
+        # print("Finding best move for player", self.player)
+        # return minimax(self, depth, self.player)
+        done = False
+
+        def animation():
+            print("Finding the move to crush you ", end="", flush=True)
+            while not done:
+                print(".", end="", flush=True)
+                time.sleep(0.5)
+            print()
+
+        t = threading.Thread(target=animation)
+        t.start()
+        best_move = minimax(self, depth, self.player)
+        done = True
+        t.join()
+        return best_move
 
     def print(self):
         board = self.convert2board()
@@ -215,7 +233,7 @@ def minimax(board, depth, player, alpha=float("-inf"), beta=float("inf")):
                 alpha = max(alpha, best)
                 board.undo_move(x)
                 if alpha >= beta or best == 1000:
-                    return float("inf"), None
+                    return float("inf"), x
         return best, bestMove
     elif player == board.PLAYER2:
         best, bestMove = 1000, None
@@ -228,19 +246,19 @@ def minimax(board, depth, player, alpha=float("-inf"), beta=float("inf")):
                 beta = min(beta, best)
                 board.undo_move(x)
                 if alpha >= beta or best == -1000:
-                    return float("-inf"), None
+                    return float("-inf"), x
 
         return best, bestMove
 
 
 if __name__ == "__main__":
     board = [
-        "0000000",
-        "0000000",
-        "0000000",
-        "0000000",
-        "0000000",
-        "0000000",
+        "0002000",
+        "0001000",
+        "0002000",
+        "0021000",
+        "0212100",
+        "1121120",
     ]
     bin_board = Board(board)
     DEPTH = 9
