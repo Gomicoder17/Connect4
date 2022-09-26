@@ -32,7 +32,8 @@ class Board:
         state = state ^ aid
         for step in (1, 6, 7, 8):
             count += bin(
-                state & (state >> step) & (state >> 2 * step) & (state >> 3 * step)
+                state & (state >> step) & (
+                    state >> 2 * step) & (state >> 3 * step)
             ).count("1")
         return count
 
@@ -58,7 +59,8 @@ class Board:
         for step in (1, 6, 7, 8):
             n_twos = state & (state >> step)
             n_twos = (
-                ((n_twos >> step) ^ state_rival) | ((n_twos << 2 * step) ^ state_rival)
+                ((n_twos >> step) ^ state_rival) | (
+                    (n_twos << 2 * step) ^ state_rival)
             ) ^ state_rival
             count += bin(n_twos).count("1")
         return count
@@ -127,7 +129,8 @@ class Board:
     def undo_move(self, col):
         self.heights[col] -= 1
         player = (
-            self.PLAYER1 if self.state1 & (1 << self.heights[col]) else self.PLAYER2
+            self.PLAYER1 if self.state1 & (
+                1 << self.heights[col]) else self.PLAYER2
         )
         if player == self.PLAYER1:
             l = 1 << self.heights[col]
@@ -213,12 +216,13 @@ def minimax(board, depth, player, alpha=float("-inf"), beta=float("inf")):
         for x in range(7):
             if board.heights[x] % 7 < 6:
                 board.make_move(x)
-                score, _ = minimax(board, depth - 1, board.PLAYER2, alpha, beta)
+                score, _ = minimax(
+                    board, depth - 1, board.PLAYER2, alpha, beta)
                 if score >= best:
                     best, bestMove = score, x
                 alpha = max(alpha, best)
                 board.undo_move(x)
-                if alpha >= beta:
+                if alpha >= beta or best == 1000:
                     return float("inf"), None
         return best, bestMove
     elif player == board.PLAYER2:
@@ -226,12 +230,13 @@ def minimax(board, depth, player, alpha=float("-inf"), beta=float("inf")):
         for x in range(7):
             if board.heights[x] % 7 < 6:
                 board.make_move(x)
-                score, _ = minimax(board, depth - 1, board.PLAYER1, alpha, beta)
+                score, _ = minimax(
+                    board, depth - 1, board.PLAYER1, alpha, beta)
                 if score <= best:
                     best, bestMove = score, x
                 beta = min(beta, best)
                 board.undo_move(x)
-                if alpha >= beta:
+                if alpha >= beta or best == -1000:
                     return float("-inf"), None
 
         return best, bestMove
