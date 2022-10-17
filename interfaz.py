@@ -20,7 +20,8 @@ def centred(*lines):
 
 
 def print_centered(line):
-    print(*centred(line))
+    line = ' '*33 + line
+    print(line)
 
 
 def check_draw(board):
