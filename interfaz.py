@@ -6,6 +6,10 @@ from minimax import find_best_move
 
 ROW_COUNT = 6
 COLUMN_COUNT = 7
+RED = "\033[38;5;196m"
+BLUE = "\033[38;5;45m"
+YELLOW = "\033[38;5;226m"
+END = "\033[m"
 
 TERMX, TERMY = os.get_terminal_size()
 
@@ -30,19 +34,20 @@ def check_draw(board):
 def show(board, clean=True):
     if clean:
         os.system("clear || cls")
-
-    # Characters for a game piece
-    cells = [" ", "●", "○"]
-
-    print_centered("\n" * ((TERMY - 11) // 2))
-    print_centered("  1   2   3   4   5   6   7 ")
-    for row in board:
-        print_centered("+---" * 6 + "+---+")
-        print_centered("| " + " | ".join([cells[u] for u in row]) + " |")
-    print_centered("+---" * 6 + "+---+")
-    print_centered("")
-    print_centered("")
-    print_centered("")
+    char = [{'0': ' '*6, '1': RED + '  ▄▄  ' + END, '2': YELLOW + '  ▄▄  ' + END},
+            {'0': ' '*6, '1': RED + '  ▀▀  ' + END, '2': YELLOW + '  ▀▀  ' + END}]
+    print_centered(BLUE + '╔' + ('═'*6 + '╦')*6 + '═'*6 + '╗' + END)
+    for n, row in enumerate(board):
+        for i in range(2):
+            linea = BLUE + '║'
+            for elem in row:
+                linea += char[i][elem] + BLUE + '║'
+            linea += END
+            print_centered(linea)
+        if n != len(board) - 1:
+            print_centered(BLUE + '╠' + ('═'*6 + '╬')*6 + '═'*6 + '╣' + END)
+        else:
+            print_centered(BLUE + '╚' + ('═'*6 + '╩')*6 + '═'*6 + '╝' + END)
 
 
 def place(board, x, turn):
@@ -145,25 +150,25 @@ def main():
         if m == 2 or (turn == 0 and m == 1):
             print_centered(f"PLAYER {turn+1}'s turn")
             print("\n\n\n\n")
-            c = input("Select a column: ")
+            c = input("Select a column (1-7): ")
             corr = correct(c, ["1", "2", "3", "4", "5", "6", "7"])
             while not corr:
                 show(board)
                 print_centered(f"PLAYER {turn+1}'s turn")
                 print("\n\n\n\n")
-                c = input("Select a column: ")
+                c = input("Select a column (1-7): ")
                 corr = correct(c, ["1", "2", "3", "4", "5", "6", "7"])
             while board[0][int(c) - 1] != 0:
                 show(board)
                 print_centered(f"PLAYER {turn+1}'s turn")
                 print("\n\n\n\n")
-                c = input("Select a column: ")
+                c = input("Select a column (1-7): ")
                 corr = correct(c, ["1", "2", "3", "4", "5", "6", "7"])
                 while not corr:
                     show(board)
                     print_centered(f"PLAYER {turn+1}'s turn")
                     print("\n\n\n\n")
-                    c = input("Select a column: ")
+                    c = input("Select a column (1-7): ")
                     corr = correct(c, ["1", "2", "3", "4", "5", "6", "7"])
             place(board, int(c), turn)
         else:
