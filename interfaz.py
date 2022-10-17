@@ -20,7 +20,7 @@ def centred(*lines):
 
 
 def print_centered(line):
-    line = ' '*33 + line
+    line = " " * 33 + line
     print(line)
 
 
@@ -35,20 +35,25 @@ def check_draw(board):
 def show(board, clean=True):
     if clean:
         os.system("clear || cls")
-    char = [{'0': ' '*6, '1': RED + '  ▄▄  ' + END, '2': YELLOW + '  ▄▄  ' + END},
-            {'0': ' '*6, '1': RED + '  ▀▀  ' + END, '2': YELLOW + '  ▀▀  ' + END}]
-    print_centered(BLUE + '╔' + ('═'*6 + '╦')*6 + '═'*6 + '╗' + END)
+    char = [
+        {0: " " * 6, 1: RED + "  ▄▄  " + END, 2: YELLOW + "  ▄▄  " + END},
+        {0: " " * 6, 1: RED + "  ▀▀  " + END, 2: YELLOW + "  ▀▀  " + END},
+    ]
+    print()
+    print_centered("   01     02     03     04     05     06     07  ")
+    print_centered(BLUE + "╔" + ("═" * 6 + "╦") * 6 + "═" * 6 + "╗" + END)
     for n, row in enumerate(board):
         for i in range(2):
-            linea = BLUE + '║'
+            linea = BLUE + "║"
             for elem in row:
-                linea += char[i][elem] + BLUE + '║'
+                linea += char[i][elem] + BLUE + "║"
             linea += END
             print_centered(linea)
         if n != len(board) - 1:
-            print_centered(BLUE + '╠' + ('═'*6 + '╬')*6 + '═'*6 + '╣' + END)
+            print_centered(BLUE + "╠" + ("═" * 6 + "╬") * 6 + "═" * 6 + "╣" + END)
         else:
-            print_centered(BLUE + '╚' + ('═'*6 + '╩')*6 + '═'*6 + '╝' + END)
+            print_centered(BLUE + "╚" + ("═" * 6 + "╩") * 6 + "═" * 6 + "╝" + END)
+    print("\n" * 2)
 
 
 def place(board, x, turn):
@@ -59,7 +64,6 @@ def place(board, x, turn):
 
 
 def winning_move(board, piece):
-
     # Check for horizontal 4 in a row for win:
     for c in range(COLUMN_COUNT - 3):
         for r in range(ROW_COUNT):
@@ -107,25 +111,20 @@ def winning_move(board, piece):
 
 def intro():
     os.system("clear || cls")
-    print_centered("CONNECT 4")
+    print_centered("     CONNECT 4")
     print_centered("Press enter to play")
     input()
 
 
 def menu():
     os.system("clear || cls")
+    print()
     print_centered("CHOOSE HOW YOU WANT TO PLAY")
+    print("\n")
+    print_centered("  1:  1 player vs bot ")
     print()
-    print()
-    print_centered("1:  1 player vs bot ")
-    print()
-    print_centered("2:     2 players    ")
-    print()
-    print()
-    print()
-    print()
-    print()
-    print()
+    print_centered("  2:     2 players    ")
+    print("\n" * 5)
     m = input("Enter the game mode: ")
     if m != "1" and m != "2" and m != "3":
         m = menu()
@@ -149,13 +148,14 @@ def main():
         turn = 1 - turn
         show(board)
         if m == 2 or (turn == 0 and m == 1):
-            print_centered(f"PLAYER {turn+1}'s turn")
-            print("\n\n\n\n")
+            sep = 18
+            print_centered(" " * sep + f"PLAYER {turn+1}'s turn")
+            print("\n" * 2)
             c = input("Select a column (1-7): ")
             corr = correct(c, ["1", "2", "3", "4", "5", "6", "7"])
             while not corr:
                 show(board)
-                print_centered(f"PLAYER {turn+1}'s turn")
+                print_centered(" " * sep + f"PLAYER {turn+1}'s turn")
                 print("\n\n\n\n")
                 c = input("Select a column (1-7): ")
                 corr = correct(c, ["1", "2", "3", "4", "5", "6", "7"])
